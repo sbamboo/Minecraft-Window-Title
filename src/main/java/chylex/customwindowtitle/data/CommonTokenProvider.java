@@ -5,10 +5,10 @@ import net.minecraft.client.Minecraft;
 
 public interface CommonTokenProvider {
 	default String getMinecraftVersion() {
-		return SharedConstants.getCurrentVersion().getName();
+		return SharedConstants.getCurrentVersion().name();
 	}
 	
-	String getModVersion(final String modId);
+	String getModVersion(String modId);
 	
 	default String getUsername() {
 		return Minecraft.getInstance().getUser().getName();
