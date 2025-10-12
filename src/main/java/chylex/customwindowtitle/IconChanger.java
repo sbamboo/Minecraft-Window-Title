@@ -19,7 +19,7 @@ public final class IconChanger {
 	private IconChanger() {}
 	
 	public static void setIcon(Path iconPath) {
-		long windowHandle = Minecraft.getInstance().getWindow().getWindow();
+		long windowHandle = Minecraft.getInstance().getWindow().handle();
 		setWindowIcon(windowHandle, iconPath);
 	}
 	
