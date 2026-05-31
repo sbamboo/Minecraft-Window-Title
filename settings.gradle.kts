@@ -8,14 +8,12 @@ pluginManagement {
 	}
 	
 	plugins {
-		val neoModDevVersion = settings.extra.get("neoModDevVersion") as? String
-		if (neoModDevVersion != null) {
-			id("net.neoforged.moddev") version neoModDevVersion
+		if (settings.extra.has("neoModDevVersion")) {
+			id("net.neoforged.moddev") version settings.extra["neoModDevVersion"] as String
 		}
 		
-		val loomVersion = settings.extra.get("loomVersion") as? String
-		if (loomVersion != null) {
-			id("fabric-loom") version "$loomVersion-SNAPSHOT"
+		if (settings.extra.has("loomVersion")) {
+			id("fabric-loom") version "${settings.extra["loomVersion"]}-SNAPSHOT"
 		}
 	}
 }
