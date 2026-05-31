@@ -12,8 +12,7 @@ plugins {
 
 dependencies {
 	minecraft("com.mojang:minecraft:$minecraftVersion")
-	modImplementation("net.fabricmc:fabric-loader:$fabricVersion")
-	mappings(loom.officialMojangMappings())
+	implementation("net.fabricmc:fabric-loader:$fabricVersion")
 }
 
 loom {
@@ -60,7 +59,7 @@ tasks.processResources {
 tasks.register<Jar>("uncompressedRemapJar") {
 	group = "fabric"
 	
-	from(tasks.remapJar.map { it.outputs.files.map(::zipTree) })
+	from(tasks.jar.map { it.outputs.files.map(::zipTree) })
 	
 	archiveClassifier.set("uncompressed")
 	entryCompression = ZipEntryCompression.STORED // Reduces size of multiloader jar.

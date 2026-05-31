@@ -62,7 +62,6 @@ loom {
 
 dependencies {
 	minecraft("com.mojang:minecraft:$minecraftVersion")
-	mappings(loom.officialMojangMappings())
 	
 	compileOnly("net.fabricmc:sponge-mixin:$mixinVersion")
 	api("com.google.code.findbugs:jsr305:3.0.2")
@@ -75,12 +74,12 @@ allprojects {
 	apply(plugin = "java-library")
 	
 	extensions.getByType<JavaPluginExtension>().apply {
-		toolchain.languageVersion.set(JavaLanguageVersion.of(21))
+		toolchain.languageVersion.set(JavaLanguageVersion.of(25))
 	}
 	
 	tasks.withType<JavaCompile> {
 		options.encoding = "UTF-8"
-		options.release.set(21)
+		options.release.set(25)
 	}
 	
 	val runJvmArgs = mutableSetOf<String>().also {
@@ -130,7 +129,7 @@ allprojects {
 
 subprojects {
 	dependencies {
-		implementation(project(rootProject.path, configuration = "namedElements"))
+		implementation(project(rootProject.path))
 	}
 	
 	base {
