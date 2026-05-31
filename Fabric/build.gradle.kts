@@ -7,7 +7,7 @@ val minecraftVersion: String by project
 val fabricVersion: String by project
 
 plugins {
-	id("fabric-loom")
+	id("net.fabricmc.fabric-loom")
 }
 
 dependencies {

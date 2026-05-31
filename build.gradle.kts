@@ -24,7 +24,7 @@ val modNameStripped = modName.replace(" ", "")
 plugins {
 	idea
 	`java-library`
-	id("fabric-loom")
+	id("net.fabricmc.fabric-loom")
 }
 
 idea {

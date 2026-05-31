@@ -13,7 +13,7 @@ pluginManagement {
 		}
 		
 		if (settings.extra.has("loomVersion")) {
-			id("fabric-loom") version "${settings.extra["loomVersion"]}-SNAPSHOT"
+			id("net.fabricmc.fabric-loom") version "${settings.extra["loomVersion"]}-SNAPSHOT"
 		}
 	}
 }
