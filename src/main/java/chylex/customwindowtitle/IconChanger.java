@@ -1,15 +1,15 @@
 package chylex.customwindowtitle;
 
+import com.mojang.blaze3d.platform.NativeImage;
 import net.minecraft.client.Minecraft;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.lwjgl.glfw.GLFW;
-import org.lwjgl.glfw.GLFWImage;
-import org.lwjgl.stb.STBImage;
-import org.lwjgl.system.MemoryStack;
-import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.nio.IntBuffer;
+import org.lwjgl.sdl.SDLError;
+import org.lwjgl.sdl.SDLPixels;
+import org.lwjgl.sdl.SDLSurface;
+import org.lwjgl.sdl.SDLVideo;
+import org.lwjgl.sdl.SDL_Surface;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
@@ -20,46 +20,30 @@ public final class IconChanger {
 	
 	public static void setIcon(Path iconPath) {
 		long windowHandle = Minecraft.getInstance().getWindow().handle();
-		setWindowIcon(windowHandle, iconPath);
-	}
-	
-	private static void setWindowIcon(long windowHandle, Path iconPath) {
-		ByteBuffer icon = null;
-		try (MemoryStack stack = MemoryStack.stackPush()) {
-			IntBuffer w = stack.mallocInt(1);
-			IntBuffer h = stack.mallocInt(1);
-			IntBuffer channels = stack.mallocInt(1);
+		
+		try (InputStream in = Files.newInputStream(iconPath); NativeImage image = NativeImage.read(in)) {
+			SDL_Surface surface = SDLSurface.SDL_CreateSurfaceFrom(
+				image.getWidth(),
+				image.getHeight(),
+				SDLPixels.SDL_PIXELFORMAT_ABGR8888,
+				image.getPixelBytes(),
+				image.getWidth() * 4
+			);
 			
-			icon = loadIcon(iconPath, w, h, channels);
-			if (icon == null) {
+			if (surface == null) {
+				LOGGER.error("Failed to create window icon surface from path: {} - {}", iconPath, SDLError.SDL_GetError());
 				return;
 			}
 			
-			try (GLFWImage.Buffer icons = GLFWImage.malloc(1)) {
-				GLFWImage iconImage = icons.get(0);
-				iconImage.set(w.get(0), h.get(0), icon);
-				
-				GLFW.glfwSetWindowIcon(windowHandle, icons);
+			try {
+				if (!SDLVideo.SDL_SetWindowIcon(windowHandle, surface)) {
+					LOGGER.error("Failed to set window icon from path: {} - {}", iconPath, SDLError.SDL_GetError());
+				}
+			} finally {
+				SDLSurface.SDL_DestroySurface(surface);
 			}
 		} catch (Exception e) {
 			LOGGER.error("Failed to set window icon from path: {}", iconPath, e);
-		} finally {
-			if (icon != null) {
-				STBImage.stbi_image_free(icon);
-			}
 		}
-	}
-	
-	private static ByteBuffer loadIcon(Path path, IntBuffer w, IntBuffer h, IntBuffer channels) throws IOException {
-		byte[] iconBytes = Files.readAllBytes(path);
-		
-		ByteBuffer buffer = ByteBuffer.allocateDirect(iconBytes.length).put(iconBytes).flip();
-		ByteBuffer icon = STBImage.stbi_load_from_memory(buffer, w, h, channels, 4);
-		
-		if (icon == null) {
-			LOGGER.error("Failed to load image from path: {} - {}", path, STBImage.stbi_failure_reason());
-		}
-		
-		return icon;
 	}
 }
